@@ -1,0 +1,195 @@
+import 'package:flutter/material.dart';
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  // Liste fictive de produits pour alimenter notre boutique
+  final List<Map<String, dynamic>> produits = const [
+    {'nom': '📱 Smartphone Premium', 'prix': '299 €', 'categorie': 'Smartphones'},
+    {'nom': '👟 Chaussures Sport', 'prix': '49 €', 'categorie': 'Vêtements'},
+    {'nom': '💻 Ordinateur portable', 'prix': '550 €', 'categorie': 'Informatique'},
+    {'nom': '📺 Télévision 4K', 'prix': '350 €', 'categorie': 'Informatique'},
+    {'nom': '👶 Produits Bébé', 'prix': '19 €', 'categorie': 'Bébé'},
+    {'nom': '👗 Vêtements Mode', 'prix': '25 €', 'categorie': 'Vêtements'},
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF3F3F3),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 1. BANNIÈRE PUBLICITAIRE / PROMOTIONNELLE
+            Container(
+              margin: const EdgeInsets.all(16),
+              width: double.infinity,
+              height: 150,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF1F8F4E), Color(0xFF2EAF65)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'PROMO DE LA SEMAINE !',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Jusqu\'à -30% sur l\'électronique',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // 2. FILTRES DE CATÉGORIES (Défilement horizontal)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Catégories',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 40,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                children: [
+                  _buildCategoryChip('Tous', true),
+                  _buildCategoryChip('📱 Smartphones', false),
+                  _buildCategoryChip('💻 Informatique', false),
+                  _buildCategoryChip('👗 Vêtements', false),
+                  _buildCategoryChip('👶 Bébé', false),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // 3. GRILLE DE PRODUITS VEDETTES
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Produits Vedettes',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(), // Désactive le scroll interne pour utiliser celui de la page
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, // 2 colonnes
+                  childAspectRatio: 0.75, // Proportion de la carte
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                ),
+                itemCount: produits.length,
+                itemBuilder: (context, index) {
+                  final produit = produits[index];
+                  return _buildProductCard(context, produit['nom'], produit['prix']);
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Widget pour générer un bouton de catégorie
+  Widget _buildCategoryChip(String label, bool isActive) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      child: ChoiceChip(
+        label: Text(label),
+        selected: isActive,
+        selectedColor: const Color(0xFF1F8F4E),
+        textColor: isActive ? Colors.white : Colors.black,
+        labelStyle: TextStyle(color: isActive ? Colors.white : Colors.black, fontWeight: FontWeight.bold),
+        onSelected: (bool selected) {},
+      ),
+    );
+  }
+
+  // Widget pour générer une carte produit
+  Widget _buildProductCard(BuildContext context, String nom, String prix) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image temporaire (Zone Grise symbolisant l'image du produit)
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+              ),
+              child: const Center(
+                child: Icon(Icons.image, size: 40, color: Colors.grey),
+              ),
+            ),
+          ),
+          // Infos Produit
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  nom,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  prix,
+                  style: const TextStyle(color: Color(0xFF1F8F4E), fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                // Bouton ajouter
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1F8F4E),
+                    minimumSize: const Size.fromHeight(32),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                  ),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('$nom ajouté au panier !')),
+                    );
+                  },
+                  child: const Text('Ajouter', style: TextStyle(color: Colors.white, fontSize: 12)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
