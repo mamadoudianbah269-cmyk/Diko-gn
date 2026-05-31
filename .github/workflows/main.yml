@@ -1,0 +1,19 @@
+name: Build Flutter APK
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          architecture: 'x64'
+      - run: mkdir -p lib && mv main.dart lib/main.dart
+      - run: flutter create --org com.dikogn . --template=app
+      - run: flutter build apk --target-platform android-arm64
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: diko-gn-app
+          path: build/app/outputs/flutter-apk/app-release.apk
